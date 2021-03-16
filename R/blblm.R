@@ -28,7 +28,6 @@ utils::globalVariables(c("."))
 #' @return a blblm object
 #' @export
 #' @examples
-#' plan(multiprocess, workers = 4)
 #' blblm(mpg ~ wt * hp, data = mtcars, m = 10, B = 10000, parallel = TRUE)
 #' blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
 blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {

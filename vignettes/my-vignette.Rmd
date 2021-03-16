@@ -1,0 +1,263 @@
+---
+title: "An Overview of the blblm Package"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{An Overview of blblm Package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(blblm)
+```
+
+## An Overview of the blblm Package
+
+The purpose of the blblm package is to improve the performance of the lm() function and the glm() function in terms of the accuracy and the efficiency of assessing the quality of estimators by applying the bag of little bootstrap (BLB) technique during the fitting process. 
+
+2 major functions that are provided by this package are the blblm(), for fitting the linear model , and the blblogreg(), for fitting the logistic model, which are both enable the implementation of parallelization. Moreover, multiple affiliated functions for these 2 major functions corresponding to their classical approach are defined in this package as well and will be demonstrate in this document.
+
+## A Breif Introduction of the Bag of Little Bootstrap (BLB) Technique
+
+It is a procedure which incorporates features of both the bootstrap and subsampling to yield a robust, computationally efficient means of assessing the quality of estimators (i.e., construct confidence intervals )
+
+
+```{r, echo = FALSE}
+DiagrammeR::grViz("blb.gv", height = 300)
+```
+
+
+Bascially, the bag of little bootstraps = mapreduce + bootstrap. However, for each bootstrap, we sample $n$ from $b$ with replacement instead of sample $b$ from $b$ as in oridinary bootstrap.
+
+- sample without replacement the sample $s$ times into sizes of $b$
+- for each subsample
+  - resample each until sample size is $n$, $r$ times
+  - compute the bootstrap statistic (e,g., the mean of a variable, or cor between two variables) for each bootstrap sample
+  - compute the statistic (e.g., confidence interval) from the bootstrap statistics
+- take the average of the statistics
+
+## Fitting a Linear Regression Model
+
+Given the data mtcars, in order to fit a linear regression model which is using the formula 'mpg ~ wt * hp', the classical way is to apply lm() as showing below: 
+
+```{r}
+fit_lm  = lm(mpg ~ wt * hp, data = mtcars)
+```
+
+Now, with blblm package, we're allowed to implement a BLB version of lm() by using the function blblm(). The number of splits on the data m is 10 by default, and the number of bootstraps B is 5000 by default.
+
+```{r}
+fit_blblm = blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
+```
+
+Similar to the lm() function, the blblm() function has its own affiliated functions for extracting the info of the fitted linear model. A few commonly used affiliated functions are compared and implemented below:
+
+1. print() vs. print.blblm() -- print the model (formula) of the fitted model
+
+The result by calling "print(fit_lm)":
+```{r}
+print(fit_lm)
+```
+
+
+The result by calling "print.blblm(fit_blblm)":
+
+```{r}
+print.blblm(fit_blblm)
+```
+
+2. sigma() vs. sigma.blblm() -- compute the residual standard deviation (sigma) of the fitted model
+
+The result by calling "sigma(fit_lm)":
+
+```{r}
+sigma(fit_lm)
+```
+
+
+The result by calling "sigma.blblm(fit_blblm)":
+
+```{r}
+sigma.blblm(fit_blblm)
+```
+
+
+3. coef() vs. coef.blblm() -- obtain the coefficients of the fitted model
+
+The result by calling "coef(fit_lm)":
+
+```{r}
+coef(fit_lm)
+```
+
+The result by calling "coef.blblm(fit_blblm)":
+
+```{r}
+coef.blblm(fit_blblm)
+```
+
+4. confint() vs. confint.blblm() -- obtain the confidence intervals for the parameters of the fitted model
+
+The result by calling "confint(fit_lm)":
+
+```{r}
+confint(fit_lm)
+```
+
+The result by calling "confint.blblm(fit_blblm)":
+
+```{r}
+confint.blblm(fit_blblm)
+```
+
+5. predict() vs. predict.blblm() --  model predictions for the fitted model
+
+The result by calling "predict(fit_lm, newdata = data.frame(wt = c(2.5, 3), hp = c(150, 170)))":
+
+```{r}
+predict(fit_lm, newdata = data.frame(wt = c(2.5, 3), hp = c(150, 170)))
+```
+
+The result by calling "predict.blblm()":
+
+```{r}
+predict.blblm(fit_blblm, new_data = data.frame(wt = c(2.5, 3), hp = c(150, 170)))
+```
+
+As we can observe from the results above, blblm() is essentially the BLB of lm() with similar affiliated functions but has better performance in terms of lower estimated standard deviation of the errors (what we get by implementing sigma() and sigma.blblm() above, 2.152752 for fit_lm and 1.50569 for fit_blblm). 
+
+
+## Fitting a Logistic Regression Model
+
+The blblm package also empower users to fit a logistic regression model by using the BLB technique. 
+
+Install the package ISLR, given the data Smarket, in order to fit a logistic regression model which is using the formula 'Direction ~ Lag1 + Lag2 + Volume', the classical way is to apply glm() as showing below: 
+
+```{r}
+fit_glm  = glm(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, family = binomial)
+```
+
+Now, with blblm package, we're allowed to implement a BLB version of glm() by using the function blblogreg(). The number of splits on the data m is 10 by default, and the number of bootstraps B is 5000 by default.
+
+```{r}
+fit_blblogreg = blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100)
+```
+
+Similar to the glm() function, the blblogreg() function has its own affiliated functions for extracting the info of the fitted logistic model. A few commonly used affiliated functions are compared and implemented below:
+
+1. print() vs. print.blblogreg() -- print the model (formula) of the logistic model
+
+The result by calling "print(fit_lm)":
+```{r}
+print(fit_glm)
+```
+
+
+The result by calling "print.blblogreg(fit_blblogreg)":
+
+```{r}
+print.blblogreg(fit_blblogreg)
+```
+
+2. sigma() vs. sigma.blblogreg() -- compute the residual standard deviation (sigma) of the logistic model
+
+The result by calling "sigma(fit_glm)":
+
+```{r}
+sigma(fit_glm)
+```
+
+
+The result by calling "sigma.blblogreg(fit_blblogreg)":
+
+```{r}
+sigma.blblogreg(fit_blblogreg)
+```
+
+
+3. coef() vs. coef.blblogreg() -- obtain the coefficients of the logistic model
+
+The result by calling "coef(fit_glm)":
+
+```{r}
+coef(fit_glm)
+```
+
+The result by calling "coef.blblogreg(fit_blblogreg)":
+
+```{r}
+coef.blblogreg(fit_blblogreg)
+```
+
+4. confint() vs. confint.blblogreg() -- obtain the confidence intervals for the parameters of the logistic model
+
+The result by calling "confint(fit_glm)":
+
+```{r}
+confint(fit_glm)
+```
+
+The result by calling "confint.blblogreg(fit_blblogreg)":
+
+```{r}
+confint.blblogreg(fit_blblogreg)
+```
+
+5. predict() vs. predict.blblogreg() --  model predictions for the fitted model
+
+The result by calling "predict(fit_lm, newdata = data.frame(wt = c(2.5, 3), hp = c(150, 170)))":
+
+```{r}
+predict(fit_glm, newdata = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1)))
+```
+
+The result by calling "predict.blblogreg()":
+
+```{r}
+predict.blblogreg(fit_blblogreg, new_data = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1)))
+```
+
+As we can observe from the results above, blblogreg() is essentially the BLB of glm(family = binomial) with similar affiliated functions. 
+
+
+
+## Parallelization
+
+The 2 main functions blblm() and blbglm() can both be set to use more than one CPUs on implementation by specifying "parallel = TRUE". It's also worth mentioning that "parallel == FALSE" by default. 
+Note: The parallelization in both the blblm() and blbglm() functions is achieved by using applying the future_map() function of the the furrr package which need to implement the plan() to specify the number of CPUs that will put into use. Nonetheless, according to the R documentation of furrr package, "Please refrain from modifying the future strategy inside your packages / functions, i.e. do not call plan() in your code," the users need to specify the control on what backend to use by themselves before the implementation of these two functions. 
+
+
+```{r}
+#example
+library(future)
+plan(multiprocess,workers=4) # the number of CPUs that will be put into use is 4
+options(future.rng.onMisuse = "ignore")
+```
+
+For the blblm() function, compare the time cost between without parallelization and with parallelization:
+
+```{r}
+system.time(blblm(mpg ~ wt * hp, data = mtcars, m = 10, B = 10000, parallel = FALSE))
+system.time(blblm(mpg ~ wt * hp, data = mtcars, m = 10, B = 10000, parallel = TRUE))
+```
+
+
+For the blblogreg() function, compare the time cost between without parallelization and with parallelization:
+
+
+```{r}
+system.time(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 10, B = 10000, parallel = FALSE))
+system.time(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 10, B = 10000, parallel = TRUE))
+```
+
+As we can observe from the above results, the time cost has obvious deduction after applying parallelization. Therefore, especially for large data set or heavy workload(B is very high), the blblm package can significantly increase the efficiency of fitting linear model and logistic model by allowing the implementation of multiple CPUs in parallel. 
+
+
+

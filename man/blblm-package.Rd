@@ -6,9 +6,9 @@
 \alias{blblm-package}
 \title{blblm: Fitting Linear Models by Applying Bag of Little Bootstrap}
 \description{
-This package performs bag of little bootstrap (blb) on lm function. In other words, it is a blb version of lm which improves the accuracy and the efficiency of assessing the quality of estimators.
+This package performs the bag of little bootstrap (blb) on lm and glm function. In other words, it is a blb version of lm and glm which improves the accuracy and the efficiency of assessing the quality of estimators.
 
-This package performs bag of little bootstrap (blb) on lm function. In other words, it is a blb version of lm which improves the accuracy and the efficiency of assessing the quality of estimators.
+This package performs the bag of little bootstrap (blb) on lm and glm function. In other words, it is a blb version of lm and glm which improves the accuracy and the efficiency of assessing the quality of estimators.
 }
 \details{
 Linear Regression with Little Bag of Bootstraps

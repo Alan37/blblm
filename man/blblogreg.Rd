@@ -25,7 +25,6 @@ blblogreg performs bag of little bootstrap (blb) on glm() function. If users set
 }
 \examples{
 library(ISLR)
-plan(multiprocess, workers = 4)
 blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, parallel = TRUE)
 blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100)
 }

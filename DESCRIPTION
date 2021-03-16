@@ -2,13 +2,15 @@ Package: blblm
 Type: Package
 Title: Fitting Linear Models by Applying Bag of Little Bootstrap
 Version: 0.1.0
-Authors@R:c(person(given = "Randy", family = "Lai", role = "aut"), person(given = "Xiaoxuan", family = "Hu", role = c("aut", "cre"), email = "xiahu@ucdavis.edu"))
-Description: This package performs bag of little bootstrap (blb) on lm function. In other words, it is a blb version of lm which improves the accuracy and the efficiency of assessing the quality of estimators. 
+Authors@R: c(person(given = "Randy", family = "Lai", role = "aut"), person(given = "Xiaoxuan", family = "Hu", role = c("aut", "cre"), email = "xiahu@ucdavis.edu"))
+Description: This package performs the bag of little bootstrap (blb) on lm and glm function. In other words, it is a blb version of lm and glm which improves the accuracy and the efficiency of assessing the quality of estimators. 
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Suggests: 
-    testthat (>= 2.1.0)
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown
 Imports: 
     purrr,
     magrittr,
@@ -16,3 +18,5 @@ Imports:
     future
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
+Config/testthat/edition: 3
+VignetteBuilder: knitr

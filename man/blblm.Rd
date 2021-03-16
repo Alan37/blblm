@@ -24,7 +24,6 @@ a blblm object
 blblm performs bag of little bootstrap (blb) on lm function. If users set "parallel = TRUE" in the blblm() function, the plan() function is usually needed for users to specify in front of the blblm() function.
 }
 \examples{
-plan(multiprocess, workers = 4)
 blblm(mpg ~ wt * hp, data = mtcars, m = 10, B = 10000, parallel = TRUE)
 blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
 }
