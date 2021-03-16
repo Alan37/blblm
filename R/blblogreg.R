@@ -12,10 +12,9 @@
 # from https://github.com/jennybc/googlesheets/blob/master/R/googlesheets.R
 utils::globalVariables(c("."))
 
-
-#' Bag of Little Bootstraps Version of Linear Regression
+#' Bag of Little Bootstraps Version of Logistic Regression
 #'
-#' blblm performs bag of little bootstrap (blb) on lm function. If users set "parallel = TRUE" in the blblm() function, the plan() function is usually needed for users to specify in front of the blblm() function.
+#' blblogreg performs bag of little bootstrap (blb) on glm() function. If users set "parallel = TRUE" in the blblogreg() function, the plan() function is usually needed for users to specify in front of the blblogreg() function.
 #'
 #'
 #' @param formula an object of class "formula" (or one that can be converted to that class).
@@ -25,26 +24,28 @@ utils::globalVariables(c("."))
 #' @param B the number of bootstraps, B = 5000 by default.
 #' @param parallel boolean, specify whether to use parallelization or not, parallel = FALSE by default
 #'
-#' @return a blblm object
+#' @return a blblogreg object
 #' @export
 #' @examples
+#' library(ISLR)
 #' plan(multiprocess, workers = 4)
-#' blblm(mpg ~ wt * hp, data = mtcars, m = 10, B = 10000, parallel = TRUE)
-#' blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
-blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
-  data_list <- split_data(data, m)
+#' blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, parallel = TRUE)
+#' blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100)
+blblogreg <- function(formula, data, m = 10, B = 5000, parallel = FALSE){
+  data_list<-split_data(data,m)
   if(parallel){
-    estimates<- future_map(
+    estimates <- future_map(
       data_list,
-      ~ lm_each_subsample(formula = formula, data = ., n = nrow(data), B=B)
+      ~ logreg_each_subsample(formula = formula, data = ., n = nrow(.), B = B)
     )
   }else{
     estimates <- map(
       data_list,
-      ~ lm_each_subsample(formula = formula, data = ., n = nrow(data), B = B))
+      ~ logreg_each_subsample(formula = formula, data = ., n = nrow(.), B = B)
+    )
   }
   res <- list(estimates = estimates, formula = formula)
-  class(res) <- "blblm"
+  class(res) <- "blblogreg"
   invisible(res)
 }
 
@@ -59,22 +60,19 @@ split_data <- function(data, m) {
 
 
 #' compute the estimates
-lm_each_subsample <- function(formula, data, n, B) {
-  # drop the original closure of formula,
-  # otherwise the formula will pick a wrong variable from the global scope.
-  environment(formula) <- environment()
-  m <- model.frame(formula, data)
-  X <- model.matrix(formula, m)
-  y <- model.response(m)
-  replicate(B, lm1(X, y, n), simplify = FALSE)
+logreg_each_subsample <- function(formula, data, n, B) {
+  replicate(B, logreg1(formula, data, n), simplify = FALSE)
 }
 
 
 #' compute the regression estimates for a blb dataset
-lm1 <- function(X, y, n) {
-  freqs <- as.vector(rmultinom(1, n, rep(1, nrow(X))))
-  fit <- lm.wfit(X, y, freqs)
-  list(coef = blbcoef(fit), sigma = blbsigma(fit))
+logreg1<-function(formula, data, n){
+  # drop the original closure of formula,
+  # otherwise the formula will pick a wrong variable from the global scope
+  environment(formula) <- environment()
+  freqs <- rmultinom(1, n, rep(1, nrow(data)))
+  fit <- glm(formula, data, family =binomial, weights = freqs)
+  list(coef = blbcoef(fit), sigma = sigma(fit))
 }
 
 
@@ -92,50 +90,50 @@ blbsigma <- function(fit) {
   sqrt(sum(w * (e^2)) / (sum(w) - p))
 }
 
-
-#' Print the blblm model (formula) of the fitting model
+#' Print the blblogreg model (formula) of the logistic model
 #'
 #' @importFrom utils capture.output
 #'
-#' @param x a blblm object
+#' @param x a blblogreg object
 #' @param ... other conditions
 #'
 #' @export
-#' @return return the blblm model (formula) of x
-#' @method print blblm
+#' @return return the blblogreg model (formula) of x
+#' @method print blblogreg
 #' @examples
-#' print.blblm(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-#' or print(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-print.blblm <- function(x, ...) {
-  cat("blblm model:", capture.output(x$formula))
+#' Can use either print.blbglm or print
+#'
+#' print.blbglm(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100))
+print.blblogreg <- function(x, ...) {
+  cat("blblogreg model:", capture.output(x$formula))
   cat("\n")
 }
 
 
-#' Compute the residual standard deviation (sigma) of a fitted model
+#' Compute the residual standard deviation (sigma) of a logistic model
 #'
-#' @param object a blblm object, the fitted model
+#' @param object a blblogreg object, the fitted model
 #' @param confidence boolean, specify whether to compute the confidence interval
 #' @param level double, the significance level 1-alpha, 0.95 by default
 #' @param ... other conditions
 #'
 #' @return return the residual standard deviation (sigma) of the object (the fitted model)
 #' @export
-#' @method sigma blblm
+#' @method sigma blblogreg
 #'
 #' @examples
-#' Can use either sigma.blblm or sigma
+#' Can use either sigma.blblogreg or sigma
 #'
-#'sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-#'> [1] 1.838911
-#'sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), confidence = TRUE)
-#'>    sigma      lwr      upr
-#'> 1.838911 1.350269 2.276347
-sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
+#'> sigma.blblogreg(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
+#'[1] 1.479956
+#'> sigma.blblogreg(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE), confidence = TRUE)
+#'sigma      lwr      upr
+#'1.479956 1.442451 1.517016
+sigma.blblogreg <- function(object, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   sigma <- mean(map_dbl(est, ~ mean(map_dbl(., "sigma"))))
   if (confidence) {
-    alpha <- 1 - 0.95
+    alpha <- 1 - level
     limits <- est %>%
       map_mean(~ quantile(map_dbl(., "sigma"), c(alpha / 2, 1 - alpha / 2))) %>%
       set_names(NULL)
@@ -145,46 +143,50 @@ sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
   }
 }
 
-#' Obtain the coefficients of the fitted model
+
+
+#' Obtain the coefficients of the logistic model
 #'
-#' @param object a blblm object, the fitted model
+#' @param object a blblogreg object, the fitted model
 #' @param ... other conditions
 #'
 #' @return return the of object (the fitted model)
 #' @export
-#' @method coef blblm
+#' @method coef blblogreg
 #'
 #' @examples
-#' Can use either coef.blblm or coef
+#' Can use either coef.blblogreg or coef
 #'
-#' coef(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-#'> (Intercept)          wt          hp       wt:hp
-#'> 48.88428523 -7.88702986 -0.11576659  0.02600976
-coef.blblm <- function(object, ...) {
+#'> coef.blblogreg(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
+#'(Intercept)        Lag1        Lag2      Volume
+#'-0.04650900 -0.08314203 -0.04528456  0.08151262
+coef.blblogreg<-function(object, ...) {
   est <- object$estimates
   map_mean(est, ~ map_cbind(., "coef") %>% rowMeans())
 }
 
 
-#' Obtain the confidence intervals for the parameters of the fitted model
+
+#' Obtain the confidence intervals for the parameters of the logistic model
 #'
-#' @param object a blblm object, the fitted model
+#' @param object a blblogreg object, the logistic model
 #' @param parm a specification of which parameters, e.g a string vector, NULL by default
 #' @param level double, the significance level 1-alpha, 0.95 by default
 #' @param ... extra conditions
 #'
 #' @return return the confidence intervals for the param of the object
 #' @export
-#' @method confint blblm
+#' @method confint blblogreg
 #'
 #' @examples
-#' Can use either confint.blblm or confint
+#' Can use either confint.blblogreg or confint
 #'
-#' confint(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), c("wt", "hp"))
-#'>           2.5%       97.5%
-#'> wt -10.7902240 -5.61586271
-#'> hp  -0.1960903 -0.07049867
-confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
+#'> confint.blblogreg(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
+#'2.5%      97.5%
+#'Lag1   -0.2499896 0.06857932
+#'Lag2   -0.2276705 0.10999090
+#'Volume -0.4333947 0.59521277
+confint.blblogreg <- function(object, parm = NULL, level = 0.95, ...) {
   if (is.null(parm)) {
     parm <- attr(terms(object$formula), "term.labels")
   }
@@ -201,30 +203,26 @@ confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
 }
 
 
-#' Model predictions for fitted models generated by blblm
+#' Model predictions for logistic models generated by blblogreg
 #'
-#'Acquire the predicted value by providing new data and the fitted model that generated by blblm.
+#'Acquire the predicted value by providing new data and the logistic model that generated by blblogreg
 #'
-#' @param object a blblm object, the fitted model
+#' @param object a blblogreg object, the logistic model
 #' @param new_data a data.frame, environment, or list
 #' @param confidence boolean, specify whether to compute the confidence interval
 #' @param level double, the significance level 1-alpha, 0.95 by default
 #' @param ... other conditions
 #'
-#' @return return the predicted value of the object (the fitted model)
+#' @return return the predicted value of the object (the logistic model)
 #' @export
-#' @method predict blblm
+#' @method predict blblogreg
 #' @examples
-#' Can use either predict.blblm or predict
-#'
-#' predict.blblm(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)))
-#'>        1        2
-#'> 21.55538 18.80785
-#'predict.blblm(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)), confidence = TRUE)
-#'>        fit      lwr      upr
-#'> 1 21.55538 20.02457 22.48764
-#'> 2 18.80785 17.50654 19.71772
-predict.blblm <- function(object, new_data, confidence = FALSE, level = 0.95, ...) {
+#' Can use either predict.blblogreg or predict
+#' > predict.blblogreg(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE), new_data = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1)))
+#'1           2           3
+#'-0.02709720 -0.03393728 -0.02105841
+
+predict.blblogreg <- function(object, new_data, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   X <- model.matrix(reformulate(attr(terms(object$formula), "term.labels")), new_data)
   if (confidence) {
