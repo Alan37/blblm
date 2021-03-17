@@ -28,10 +28,10 @@ The purpose of the blblm package is to improve the performance of the lm() funct
 
 It is a procedure which incorporates features of both the bootstrap and subsampling to yield a robust, computationally efficient means of assessing the quality of estimators (i.e., construct confidence intervals )
 
-
-```{r, echo = FALSE}
+```{r}
 DiagrammeR::grViz("blb.gv", height = 300)
 ```
+
 
 
 Bascially, the bag of little bootstraps = mapreduce + bootstrap. However, for each bootstrap, we sample $n$ from $b$ with replacement instead of sample $b$ from $b$ as in oridinary bootstrap.
@@ -61,16 +61,12 @@ Similar to the lm() function, the blblm() function has its own affiliated functi
 
 1. print() vs. print.blblm() -- print the model (formula) of the fitted model
 
-The result by calling "print(fit_lm)":
 ```{r}
 print(fit_lm)
 ```
 
-
-The result by calling "print.blblm(fit_blblm)":
-
 ```{r}
-print.blblm(fit_blblm)
+print(fit_blblm) #print.blblm() behind
 ```
 
 2. sigma() vs. sigma.blblm() -- compute the residual standard deviation (sigma) of the fitted model
@@ -82,56 +78,48 @@ sigma(fit_lm)
 ```
 
 
-The result by calling "sigma.blblm(fit_blblm)":
-
 ```{r}
-sigma.blblm(fit_blblm)
+sigma(fit_blblm) #sigma.blblm() behind
 ```
 
 
 3. coef() vs. coef.blblm() -- obtain the coefficients of the fitted model
 
-The result by calling "coef(fit_lm)":
 
 ```{r}
 coef(fit_lm)
 ```
 
-The result by calling "coef.blblm(fit_blblm)":
 
 ```{r}
-coef.blblm(fit_blblm)
+coef(fit_blblm) #coef.blblm(fit_blblm) behind
 ```
 
 4. confint() vs. confint.blblm() -- obtain the confidence intervals for the parameters of the fitted model
 
-The result by calling "confint(fit_lm)":
 
 ```{r}
 confint(fit_lm)
 ```
 
-The result by calling "confint.blblm(fit_blblm)":
 
 ```{r}
-confint.blblm(fit_blblm)
+confint(fit_blblm) #confint.blblm(fit_blblm) behind
 ```
 
 5. predict() vs. predict.blblm() --  model predictions for the fitted model
 
-The result by calling "predict(fit_lm, newdata = data.frame(wt = c(2.5, 3), hp = c(150, 170)))":
 
 ```{r}
 predict(fit_lm, newdata = data.frame(wt = c(2.5, 3), hp = c(150, 170)))
 ```
 
-The result by calling "predict.blblm()":
 
 ```{r}
-predict.blblm(fit_blblm, new_data = data.frame(wt = c(2.5, 3), hp = c(150, 170)))
+predict(fit_blblm, new_data = data.frame(wt = c(2.5, 3), hp = c(150, 170))) #predict.blblm() behind
 ```
 
-As we can observe from the results above, blblm() is essentially the BLB of lm() with similar affiliated functions but has better performance in terms of lower estimated standard deviation of the errors (what we get by implementing sigma() and sigma.blblm() above, 2.152752 for fit_lm and 1.50569 for fit_blblm). 
+As we can observe from the results above, blblm() is essentially the BLB of lm() with similar affiliated functions but has better performance in terms of lower estimated standard deviation of the errors (what we get by implementing sigma() and sigma.blblm() above). 
 
 
 ## Fitting a Logistic Regression Model
@@ -154,37 +142,28 @@ Similar to the glm() function, the blblogreg() function has its own affiliated f
 
 1. print() vs. print.blblogreg() -- print the model (formula) of the logistic model
 
-The result by calling "print(fit_lm)":
 ```{r}
 print(fit_glm)
 ```
 
-
-The result by calling "print.blblogreg(fit_blblogreg)":
-
 ```{r}
-print.blblogreg(fit_blblogreg)
+print(fit_blblogreg) #print.blblogreg() behind
 ```
 
 2. sigma() vs. sigma.blblogreg() -- compute the residual standard deviation (sigma) of the logistic model
 
-The result by calling "sigma(fit_glm)":
-
 ```{r}
-sigma(fit_glm)
+sigma(fit_glm) 
 ```
 
 
-The result by calling "sigma.blblogreg(fit_blblogreg)":
-
 ```{r}
-sigma.blblogreg(fit_blblogreg)
+sigma(fit_blblogreg) #sigma.blblogreg() behind
 ```
 
 
 3. coef() vs. coef.blblogreg() -- obtain the coefficients of the logistic model
 
-The result by calling "coef(fit_glm)":
 
 ```{r}
 coef(fit_glm)
@@ -193,35 +172,28 @@ coef(fit_glm)
 The result by calling "coef.blblogreg(fit_blblogreg)":
 
 ```{r}
-coef.blblogreg(fit_blblogreg)
+coef(fit_blblogreg) #coef.blblogreg() behind
 ```
 
 4. confint() vs. confint.blblogreg() -- obtain the confidence intervals for the parameters of the logistic model
 
-The result by calling "confint(fit_glm)":
 
 ```{r}
 confint(fit_glm)
 ```
 
-The result by calling "confint.blblogreg(fit_blblogreg)":
-
 ```{r}
-confint.blblogreg(fit_blblogreg)
+confint(fit_blblogreg) #confint.blblogreg() behind
 ```
 
 5. predict() vs. predict.blblogreg() --  model predictions for the fitted model
-
-The result by calling "predict(fit_lm, newdata = data.frame(wt = c(2.5, 3), hp = c(150, 170)))":
 
 ```{r}
 predict(fit_glm, newdata = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1)))
 ```
 
-The result by calling "predict.blblogreg()":
-
 ```{r}
-predict.blblogreg(fit_blblogreg, new_data = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1)))
+predict(fit_blblogreg, new_data = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1))) #predict.blblogreg behind
 ```
 
 As we can observe from the results above, blblogreg() is essentially the BLB of glm(family = binomial) with similar affiliated functions. 
@@ -231,6 +203,9 @@ As we can observe from the results above, blblogreg() is essentially the BLB of 
 ## Parallelization
 
 The 2 main functions blblm() and blbglm() can both be set to use more than one CPUs on implementation by specifying "parallel = TRUE". It's also worth mentioning that "parallel == FALSE" by default. 
+
+\
+
 Note: The parallelization in both the blblm() and blbglm() functions is achieved by using applying the future_map() function of the the furrr package which need to implement the plan() to specify the number of CPUs that will put into use. Nonetheless, according to the R documentation of furrr package, "Please refrain from modifying the future strategy inside your packages / functions, i.e. do not call plan() in your code," the users need to specify the control on what backend to use by themselves before the implementation of these two functions. 
 
 
