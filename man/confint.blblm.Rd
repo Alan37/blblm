@@ -23,7 +23,4 @@ Obtain the confidence intervals for the parameters of the fitted model
 }
 \examples{
 confint(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), c("wt", "hp"))
->           2.5\%       97.5\%
-> wt -10.7902240 -5.61586271
-> hp  -0.1960903 -0.07049867
 }

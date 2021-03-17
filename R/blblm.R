@@ -28,8 +28,8 @@ utils::globalVariables(c("."))
 #' @return a blblm object
 #' @export
 #' @examples
-#' blblm(mpg ~ wt * hp, data = mtcars, m = 10, B = 10000, parallel = TRUE)
-#' blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
+#'blblm(mpg ~ wt * hp, data = mtcars, m = 10, B = 10000, parallel = TRUE)
+#'blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100)
 blblm <- function(formula, data, m = 10, B = 5000, parallel = FALSE) {
   data_list <- split_data(data, m)
   if(parallel){
@@ -123,10 +123,7 @@ print.blblm <- function(x, ...) {
 #'
 #' @examples
 #'sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-#'> [1] 1.838911
 #'sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), confidence = TRUE)
-#'>    sigma      lwr      upr
-#'> 1.838911 1.350269 2.276347
 sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   sigma <- mean(map_dbl(est, ~ mean(map_dbl(., "sigma"))))
@@ -151,9 +148,7 @@ sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
 #' @method coef blblm
 #'
 #' @examples
-#' coef(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-#'> (Intercept)          wt          hp       wt:hp
-#'> 48.88428523 -7.88702986 -0.11576659  0.02600976
+#'coef(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
 coef.blblm <- function(object, ...) {
   est <- object$estimates
   map_mean(est, ~ map_cbind(., "coef") %>% rowMeans())
@@ -173,9 +168,6 @@ coef.blblm <- function(object, ...) {
 #'
 #' @examples
 #' confint(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), c("wt", "hp"))
-#'>           2.5%       97.5%
-#'> wt -10.7902240 -5.61586271
-#'> hp  -0.1960903 -0.07049867
 confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
   if (is.null(parm)) {
     parm <- attr(terms(object$formula), "term.labels")
@@ -207,13 +199,8 @@ confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
 #' @export
 #' @method predict blblm
 #' @examples
-#' predict(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)))
-#'>        1        2
-#'> 21.55538 18.80785
+#'predict(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)))
 #'predict(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)), confidence = TRUE)
-#'>        fit      lwr      upr
-#'> 1 21.55538 20.02457 22.48764
-#'> 2 18.80785 17.50654 19.71772
 predict.blblm <- function(object, new_data, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   X <- model.matrix(reformulate(attr(terms(object$formula), "term.labels")), new_data)

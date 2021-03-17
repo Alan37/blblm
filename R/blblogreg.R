@@ -28,8 +28,8 @@ utils::globalVariables(c("."))
 #' @export
 #' @examples
 #' library(ISLR)
-#' blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, parallel = TRUE)
-#' blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100)
+#' blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, parallel = TRUE)
+#' blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100)
 blblogreg <- function(formula, data, m = 10, B = 5000, parallel = FALSE){
   data_list<-split_data(data,m)
   if(parallel){
@@ -100,7 +100,7 @@ blbsigma <- function(fit) {
 #' @return return the blblogreg model (formula) of x
 #' @method print blblogreg
 #' @examples
-#' print(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100))
+#' print(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100))
 print.blblogreg <- function(x, ...) {
   cat("blblogreg model:", capture.output(x$formula))
   cat("\n")
@@ -119,11 +119,8 @@ print.blblogreg <- function(x, ...) {
 #' @method sigma blblogreg
 #'
 #' @examples
-#'> sigma(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
-#'[1] 1.479956
-#'> sigma(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE), confidence = TRUE)
-#'sigma      lwr      upr
-#'1.479956 1.442451 1.517016
+#'sigma(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100, parallel = TRUE))
+#'sigma(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100, parallel = TRUE), confidence = TRUE)
 sigma.blblogreg <- function(object, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   sigma <- mean(map_dbl(est, ~ mean(map_dbl(., "sigma"))))
@@ -150,9 +147,7 @@ sigma.blblogreg <- function(object, confidence = FALSE, level = 0.95, ...) {
 #' @method coef blblogreg
 #'
 #' @examples
-#'> coef(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
-#'(Intercept)        Lag1        Lag2      Volume
-#'-0.04650900 -0.08314203 -0.04528456  0.08151262
+#'coef(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100, parallel = TRUE))
 coef.blblogreg<-function(object, ...) {
   est <- object$estimates
   map_mean(est, ~ map_cbind(., "coef") %>% rowMeans())
@@ -172,11 +167,7 @@ coef.blblogreg<-function(object, ...) {
 #' @method confint blblogreg
 #'
 #' @examples
-#'> confint(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
-#'2.5%      97.5%
-#'Lag1   -0.2499896 0.06857932
-#'Lag2   -0.2276705 0.10999090
-#'Volume -0.4333947 0.59521277
+#'confint(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100, parallel = TRUE))
 confint.blblogreg <- function(object, parm = NULL, level = 0.95, ...) {
   if (is.null(parm)) {
     parm <- attr(terms(object$formula), "term.labels")
@@ -208,10 +199,7 @@ confint.blblogreg <- function(object, parm = NULL, level = 0.95, ...) {
 #' @export
 #' @method predict blblogreg
 #' @examples
-#' > predict(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE), new_data = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1)))
-#'1           2           3
-#'-0.02709720 -0.03393728 -0.02105841
-
+#'predict(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100, parallel = TRUE), new_data = data.frame("Lag1" = c(0.382, 0.4, 0.5),"Lag2" = c(1.03, 1.4, 0.5), "Volume" = c(1.2, 1.34, 1.1)))
 predict.blblogreg <- function(object, new_data, confidence = FALSE, level = 0.95, ...) {
   est <- object$estimates
   X <- model.matrix(reformulate(attr(terms(object$formula), "term.labels")), new_data)

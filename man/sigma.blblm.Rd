@@ -23,8 +23,5 @@ Compute the residual standard deviation (sigma) of a fitted model
 }
 \examples{
 sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-> [1] 1.838911
 sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), confidence = TRUE)
->    sigma      lwr      upr
-> 1.838911 1.350269 2.276347
 }

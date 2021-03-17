@@ -25,10 +25,5 @@ Acquire the predicted value by providing new data and the fitted model that gene
 }
 \examples{
 predict(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)))
->        1        2
-> 21.55538 18.80785
 predict(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)), confidence = TRUE)
->        fit      lwr      upr
-> 1 21.55538 20.02457 22.48764
-> 2 18.80785 17.50654 19.71772
 }

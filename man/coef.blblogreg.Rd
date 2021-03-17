@@ -18,7 +18,5 @@ return the of object (the fitted model)
 Obtain the coefficients of the logistic model
 }
 \examples{
-> coef(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
-(Intercept)        Lag1        Lag2      Volume
--0.04650900 -0.08314203 -0.04528456  0.08151262
+coef(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100, parallel = TRUE))
 }

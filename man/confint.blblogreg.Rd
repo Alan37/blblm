@@ -22,9 +22,5 @@ return the confidence intervals for the param of the object
 Obtain the confidence intervals for the parameters of the logistic model
 }
 \examples{
-> confint(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
-2.5\%      97.5\%
-Lag1   -0.2499896 0.06857932
-Lag2   -0.2276705 0.10999090
-Volume -0.4333947 0.59521277
+confint(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = ISLR::Smarket, m = 3, B = 100, parallel = TRUE))
 }
