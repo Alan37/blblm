@@ -22,11 +22,9 @@ return the residual standard deviation (sigma) of the object (the fitted model)
 Compute the residual standard deviation (sigma) of a logistic model
 }
 \examples{
-Can use either sigma.blblogreg or sigma
-
-> sigma.blblogreg(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
+> sigma(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE))
 [1] 1.479956
-> sigma.blblogreg(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE), confidence = TRUE)
+> sigma(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100, parallel = TRUE), confidence = TRUE)
 sigma      lwr      upr
 1.479956 1.442451 1.517016
 }

@@ -18,6 +18,5 @@ return the blblm model (formula) of x
 Print the blblm model (formula) of the fitting model
 }
 \examples{
-print.blblm(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-or print(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
+print(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
 }

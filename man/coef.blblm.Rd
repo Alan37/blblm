@@ -18,8 +18,6 @@ return the of object (the fitted model)
 Obtain the coefficients of the fitted model
 }
 \examples{
-Can use either coef.blblm or coef
-
 coef(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
 > (Intercept)          wt          hp       wt:hp
 > 48.88428523 -7.88702986 -0.11576659  0.02600976

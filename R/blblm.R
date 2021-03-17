@@ -103,8 +103,7 @@ blbsigma <- function(fit) {
 #' @return return the blblm model (formula) of x
 #' @method print blblm
 #' @examples
-#' print.blblm(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
-#' or print(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
+#' print(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
 print.blblm <- function(x, ...) {
   cat("blblm model:", capture.output(x$formula))
   cat("\n")
@@ -123,8 +122,6 @@ print.blblm <- function(x, ...) {
 #' @method sigma blblm
 #'
 #' @examples
-#' Can use either sigma.blblm or sigma
-#'
 #'sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
 #'> [1] 1.838911
 #'sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), confidence = TRUE)
@@ -154,8 +151,6 @@ sigma.blblm <- function(object, confidence = FALSE, level = 0.95, ...) {
 #' @method coef blblm
 #'
 #' @examples
-#' Can use either coef.blblm or coef
-#'
 #' coef(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
 #'> (Intercept)          wt          hp       wt:hp
 #'> 48.88428523 -7.88702986 -0.11576659  0.02600976
@@ -177,8 +172,6 @@ coef.blblm <- function(object, ...) {
 #' @method confint blblm
 #'
 #' @examples
-#' Can use either confint.blblm or confint
-#'
 #' confint(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), c("wt", "hp"))
 #'>           2.5%       97.5%
 #'> wt -10.7902240 -5.61586271
@@ -214,12 +207,10 @@ confint.blblm <- function(object, parm = NULL, level = 0.95, ...) {
 #' @export
 #' @method predict blblm
 #' @examples
-#' Can use either predict.blblm or predict
-#'
-#' predict.blblm(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)))
+#' predict(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)))
 #'>        1        2
 #'> 21.55538 18.80785
-#'predict.blblm(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)), confidence = TRUE)
+#'predict(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), data.frame(wt = c(2.5, 3), hp = c(150, 170)), confidence = TRUE)
 #'>        fit      lwr      upr
 #'> 1 21.55538 20.02457 22.48764
 #'> 2 18.80785 17.50654 19.71772

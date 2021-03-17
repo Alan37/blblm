@@ -22,8 +22,6 @@ return the residual standard deviation (sigma) of the object (the fitted model)
 Compute the residual standard deviation (sigma) of a fitted model
 }
 \examples{
-Can use either sigma.blblm or sigma
-
 sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100))
 > [1] 1.838911
 sigma(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), confidence = TRUE)

@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, echo=FALSE}
 library(blblm)
 ```
 
@@ -28,10 +28,10 @@ The purpose of the blblm package is to improve the performance of the lm() funct
 
 It is a procedure which incorporates features of both the bootstrap and subsampling to yield a robust, computationally efficient means of assessing the quality of estimators (i.e., construct confidence intervals )
 
-```{r}
-DiagrammeR::grViz("blb.gv", height = 300)
-```
 
+```{r, echo = FALSE}
+knitr::include_graphics("blb.png")
+```
 
 
 Bascially, the bag of little bootstraps = mapreduce + bootstrap. However, for each bootstrap, we sample $n$ from $b$ with replacement instead of sample $b$ from $b$ as in oridinary bootstrap.

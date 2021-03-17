@@ -22,8 +22,6 @@ return the confidence intervals for the param of the object
 Obtain the confidence intervals for the parameters of the fitted model
 }
 \examples{
-Can use either confint.blblm or confint
-
 confint(blblm(mpg ~ wt * hp, data = mtcars, m = 3, B = 100), c("wt", "hp"))
 >           2.5\%       97.5\%
 > wt -10.7902240 -5.61586271

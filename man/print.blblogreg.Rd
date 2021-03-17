@@ -18,7 +18,5 @@ return the blblogreg model (formula) of x
 Print the blblogreg model (formula) of the logistic model
 }
 \examples{
-Can use either print.blbglm or print
-
-print.blbglm(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100))
+print(blblogreg(Direction ~ Lag1 + Lag2 + Volume, data = Smarket, m = 3, B = 100))
 }
